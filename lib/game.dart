@@ -148,7 +148,18 @@ class _GamePageState extends State<GamePage> {
             style: TextStyle(color: Colors.white),
           ),
           actions: [
-            FlatButton(
+              TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Menu",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
                 restart();
@@ -327,7 +338,18 @@ class _GamePageState extends State<GamePage> {
             style: TextStyle(color: Colors.white),
           ),
           actions: [
-            FlatButton(
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Main Menu",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
                 restart();

@@ -150,7 +150,7 @@ class _MyHomePageState extends State<HomePage> {
             ),
           ),
           actions: [
-            FlatButton(
+            TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
               },

@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Snake-2D',
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        accentColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
+            .copyWith(secondary: Colors.white),
       ),
       home: HomePage(),
       routes: <String, WidgetBuilder>{

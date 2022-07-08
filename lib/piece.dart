@@ -43,14 +43,14 @@ class Piece extends StatefulWidget {
   final Color color;
   final bool isAnimated;
 
-  const Piece({Key key, this.posX, this.posY, this.size, this.color = const Color(0XFFBF3100), this.isAnimated = false}) : super(key: key);
+  const Piece({ Key? key, required this.posX, required this.posY, required this.size, this.color = const Color(0XFFBF3100), this.isAnimated = false}) : super(key: key);
 
   @override
   _PieceState createState() => _PieceState();
 }
 
 class _PieceState extends State<Piece> with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
+  late AnimationController _animationController;
 
   @override
   void initState() {

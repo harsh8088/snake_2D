@@ -55,17 +55,19 @@ class _GamePageState extends State<GamePage> {
   int step = 20;
   Direction direction = Direction.right;
 
-  Piece food;
-  Offset foodPosition;
+  late Piece food;
+  late Offset foodPosition;
 
-  double screenWidth;
-  double screenHeight;
-  int lowerBoundX, upperBoundX, lowerBoundY, upperBoundY;
+  late double screenWidth;
+  late double screenHeight;
+  late int lowerBoundX, upperBoundX, lowerBoundY, upperBoundY;
 
-  Timer timer;
+  Timer? timer;
   double speed = 1;
 
   int score = 0;
+
+  bool isFirstGame = true;
 
   void draw() async {
     if (positions.length == 0) {
@@ -79,10 +81,10 @@ class _GamePageState extends State<GamePage> {
     for (int i = positions.length - 1; i > 0; i--) {
       positions[i] = positions[i - 1];
     }
-    positions[0] = await getNextPosition(positions[0]);
+    positions[0] = (await getNextPosition(positions[0]))!;
   }
 
-  Direction getRandomDirection([String type]) {
+  Direction getRandomDirection([String? type]) {
     if (type == "horizontal") {
       bool random = Random().nextBool();
       if (random) {
@@ -125,6 +127,78 @@ class _GamePageState extends State<GamePage> {
   }
 
   void showGameOverDialog() {
+    var scoreWell = score.toInt() > 40 ? "You played well." : "";
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.red.shade500,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: Colors.black,
+                width: 3.0,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          title: Text(
+            "Game Over",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                scoreWell,
+                style: TextStyle(color: Colors.white),
+              ),
+              Text(
+                "Your Score " + score.toString() + ".",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Menu",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                restart();
+              },
+              child: Text(
+                "Restart",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void checkFirstGame() async {
+    if (timer!.isActive) timer!.cancel();
+    await Future.delayed(Duration(milliseconds: 500), () => startGameDialog());
+  }
+
+  void startGameDialog() {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -138,36 +212,37 @@ class _GamePageState extends State<GamePage> {
               ),
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
           title: Text(
-            "Game Over",
+            "Game",
             style: TextStyle(color: Colors.white),
           ),
           content: Text(
-            "Your game is over but you played well. Your score is " +
-                score.toString() +
-                ".",
+            "Start your Game.",
             style: TextStyle(color: Colors.white),
           ),
           actions: [
-              TextButton(
+            TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
               child: Text(
-                "Menu",
+                "Main Menu",
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.white,fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
+                setState(() {
+                  isFirstGame = false;
+                });
                 restart();
               },
               child: Text(
-                "Restart",
+                "Start",
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.white,fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -176,11 +251,11 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Future<Offset> getNextPosition(Offset position) async {
-    Offset nextPosition;
+  Future<Offset?> getNextPosition(Offset position) async {
+    Offset? nextPosition;
 
     if (detectCollision(position) == true) {
-      if (timer != null && timer.isActive) timer.cancel();
+      if (timer!.isActive) timer!.cancel();
       await Future.delayed(
           Duration(milliseconds: 500), () => showGameOverDialog());
       return position;
@@ -206,10 +281,9 @@ class _GamePageState extends State<GamePage> {
 
     if (foodPosition == positions[0]) {
       length++;
-      speed = speed + 0.02;
+      speed = speed + 0.01;
       score = score + 5;
       changeSpeed();
-
       foodPosition = getRandomPositionWithinRange();
     }
 
@@ -263,7 +337,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void changeSpeed() {
-    if (timer != null && timer.isActive) timer.cancel();
+    if (timer != null && timer!.isActive) timer!.cancel();
 
     // if you want timer to tick at fixed duration.
     timer = Timer.periodic(Duration(milliseconds: 200 ~/ speed), (timer) {
@@ -288,6 +362,7 @@ class _GamePageState extends State<GamePage> {
     positions = [];
     direction = getRandomDirection();
     speed = 1;
+    foodPosition = getRandomPositionWithinRange();
     changeSpeed();
   }
 
@@ -312,58 +387,11 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-
+    lowerBoundX = step;
+    lowerBoundY = step;
+    upperBoundX = roundToNearestTens(200 - step);
+    upperBoundY = roundToNearestTens(200 - step);
     restart();
-  }
-
-  void startGameDialog() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: Colors.green,
-          shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Colors.black,
-                width: 3.0,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
-          title: Text(
-            "Game Start",
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            "Press start to play",
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Main Menu",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                restart();
-              },
-              child: Text(
-                "Start",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -375,6 +403,10 @@ class _GamePageState extends State<GamePage> {
     lowerBoundY = step;
     upperBoundX = roundToNearestTens(screenWidth.toInt() - step);
     upperBoundY = roundToNearestTens(screenHeight.toInt() - step);
+
+    if (isFirstGame) {
+      checkFirstGame();
+    }
 
     return Scaffold(
       body: Container(

@@ -38,10 +38,10 @@ DEALINGS IN THE SOFTWARE. */
 import 'package:flutter/material.dart';
 
 class ControlButton extends StatelessWidget {
-  final Function onPressed;
+  final Function() onPressed;
   final Icon icon;
 
-  const ControlButton({Key key, this.onPressed, this.icon}) : super(key: key);
+  const ControlButton({ Key? key, required this.onPressed, required this.icon}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +53,10 @@ class ControlButton extends StatelessWidget {
         child: FittedBox(
           child: FloatingActionButton(
             heroTag: null,
-            backgroundColor: Colors.green.withOpacity(0.4),
+            backgroundColor: Colors.grey.withOpacity(0.4),
             elevation: 0.0,
             child: this.icon,
-            onPressed: this.onPressed,
+            onPressed:onPressed,
           ),
         ),
       ),

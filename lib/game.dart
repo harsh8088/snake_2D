@@ -39,6 +39,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'control_panel.dart';
 import 'direction.dart';
@@ -126,8 +127,26 @@ class _GamePageState extends State<GamePage> {
     return false;
   }
 
-  void showGameOverDialog() {
+  Future<void> showGameOverDialog() async {
     var scoreWell = score.toInt() > 40 ? "You played well." : "";
+    if (scoreWell != "") {
+      // Obtain shared preferences.
+      final prefs = await SharedPreferences.getInstance();
+
+      // fetch your string list
+      List<String> mList = (prefs.getStringList('HighScores') ??
+          List<String>.empty(growable: true));
+      print(mList);
+      mList.add(score.toString());
+      Set<String> sList = mList.toSet();
+      print(sList);
+      List<int> nList = sList.map(int.parse).toList();
+      nList.sort((b, a) => a.compareTo(b));
+
+      List<String> fList = nList.map((item) => item.toString()).toList();
+
+      await prefs.setStringList('HighScores', fList);
+    }
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -227,8 +246,10 @@ class _GamePageState extends State<GamePage> {
               },
               child: Text(
                 "Main Menu",
-                style:
-                    TextStyle(color: Colors.white,fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             TextButton(
@@ -241,8 +262,10 @@ class _GamePageState extends State<GamePage> {
               },
               child: Text(
                 "Start",
-                style:
-                    TextStyle(color: Colors.white,fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ],

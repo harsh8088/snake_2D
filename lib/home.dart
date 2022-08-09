@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/app_navigator.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,10 +22,10 @@ class _MyHomePageState extends State<HomePage> {
       backgroundColor: Colors.white30,
       appBar: AppBar(
         backgroundColor: Colors.transparent, elevation: 0.0,
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          // title: Text("Home"),
-          ),
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        // title: Text("Home"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(0.0),
         child: Column(
@@ -67,9 +68,11 @@ class _MyHomePageState extends State<HomePage> {
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                         Colors.black12.withOpacity(0.8)),
+                        Colors.black12.withOpacity(0.8)),
                   ),
-                  onPressed: () {showHighScoreDialog();},
+                  onPressed: () {
+                    showHighScoreDialog();
+                  },
                   child: Text("High Scores",
                       style: TextStyle(fontSize: 18, color: Colors.white70)),
                 ),
@@ -83,7 +86,7 @@ class _MyHomePageState extends State<HomePage> {
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                         Colors.black12.withOpacity(0.8)),
+                        Colors.black12.withOpacity(0.8)),
                   ),
                   onPressed: () {},
                   child: Text("About",
@@ -100,8 +103,14 @@ class _MyHomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> showHighScoreDialog() async {
+    final prefs = await SharedPreferences.getInstance();
 
-   void showHighScoreDialog() {
+    // fetch your string list
+    List<String> mList = (prefs.getStringList('HighScores') ??
+        List<String>.empty(growable: true));
+    print(mList.length);
+
     showDialog(
       barrierDismissible: true,
       context: context,
@@ -120,34 +129,28 @@ class _MyHomePageState extends State<HomePage> {
                 "High Scores",
                 style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
               ),
-              Divider(color:Colors.white60,)
+              Divider(
+                color: Colors.white60,
+              )
             ],
           ),
           content: Container(
-            height: 200,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "1. UserName1: 120",
-                  style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
-                ),
-                 Text(
-                  "2. UserName2: 100",
-                  style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
-                ),
-                 Text(
-                  "3. UserName3: 60",
-                  style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
-                ),
-                 Text(
-                  "4. UserName4: 20",
-                  style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
-                ),
-              ],
-            ),
-          ),
+              height: 200,
+              width: 600,
+              child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: mList.length<5?mList.length:5,
+                        itemBuilder: (BuildContext context, int index) {
+                      return Text(
+                        "${index+1}. ${mList[index]}",
+                        style: TextStyle(color: Colors.yellow.withOpacity(0.9)),
+                      );
+                    })
+                  ])),
           actions: [
             TextButton(
               onPressed: () async {
@@ -155,8 +158,8 @@ class _MyHomePageState extends State<HomePage> {
               },
               child: Text(
                 "Close",
-                style:
-                    TextStyle(color: Colors.white60, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white60, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -164,5 +167,4 @@ class _MyHomePageState extends State<HomePage> {
       },
     );
   }
-
 }

@@ -363,7 +363,7 @@ class _GamePageState extends State<GamePage> {
     if (timer != null && timer!.isActive) timer!.cancel();
 
     // if you want timer to tick at fixed duration.
-    timer = Timer.periodic(Duration(milliseconds: 200 ~/ speed), (timer) {
+    timer = Timer.periodic(Duration(milliseconds: 600 ~/ speed), (timer) {
       setState(() {});
     });
   }

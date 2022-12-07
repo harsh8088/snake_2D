@@ -35,7 +35,10 @@ class _MyHomePageState extends State<HomePage> {
             Expanded(
                 flex: 4,
                 child: Stack(children: <Widget>[
-                  Image(image: AssetImage('assets/images/snake_2d.jpg')),
+                  Container(
+                    color: Colors.amber
+                    ,child: Image(image: AssetImage('assets/images/snake_2d.jpg'))
+                  ),
                   Center(
                     child: Text(
                       'Snake-2D',

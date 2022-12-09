@@ -15,11 +15,11 @@ class AppNavigator {
   }
 
   static void goToOtpScreen(BuildContext context, Map value) {
-    Navigator.pushNamed(context, "/otpscreen", arguments: value);
+    Navigator.pushNamed(context, "/otp-screen", arguments: value);
   }
 
-  static void goToHelpandSupport(BuildContext context) {
-    Navigator.pushNamed(context, "/helpandsupport");
+  static void goToHelpAndSupport(BuildContext context) {
+    Navigator.pushNamed(context, "/help-and-support");
   }
 
  

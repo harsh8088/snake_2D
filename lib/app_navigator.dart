@@ -21,6 +21,4 @@ class AppNavigator {
   static void goToHelpAndSupport(BuildContext context) {
     Navigator.pushNamed(context, "/help-and-support");
   }
-
- 
 }
